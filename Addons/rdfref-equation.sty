@@ -1,0 +1,39 @@
+\ProvidesPackage{rdfref-equation}
+\NewDocumentEnvironment{rdfequation}{o +b}{
+  \begin{equation}[eq:this]
+    #2 
+    \IfBlankF{#1}{
+      \rdflabel{#1}
+      \AssignProperty{#1}{eq:value}{$#2$}
+    }
+  \end{equation}
+}{}
+\makeatletter
+%%\let\rdf@oldlabel\label
+\let\label\rdflabel
+\let\rdf@oldref\autoref
+\let\autoref\rdfref
+\makeatother
+
+\newcommand\renewrdfenvironment[1]{% 
+  \expandafter\let\csname orig:#1\expandafter\endcsname\csname#1\endcsname%
+  \expandafter\let\csname endorig:#1\expandafter\endcsname\csname end#1\endcsname%
+  \RenewDocumentEnvironment{#1}{o +b}{
+  \begin{orig:#1}%
+    ##2%
+    \IfBlankF{##1}{%
+      \rdflabel{##1}%
+      \AddTriple{##1}{eq:value}{$##2$}%
+    }
+  \end{orig:#1}%
+}{}%
+}
+\renewrdfenvironment{equation}
+
+
+\AddRdfType{eq}{
+  \AddPropertyEx{rdf:type}{eq:equation}
+  \AddPropertyEx{doc:pageNo}{\thepage}
+  % this will be used in the graph label, change to your liking
+  \AddPropertyEx{rdfs:label}{Equation \theequation}
+}
