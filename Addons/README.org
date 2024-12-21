@@ -1,0 +1,96 @@
+* Manual
+** Overview over the files
+*** Elisp
+=rdf.el=
+
+A small hack for Emacs users, who also utilize =AucTeX= and =reftex=
+It converts the classical equation environment such as:
+#+begin_src 
+\begin{equation}
+  \label{eq:test:1}
+  \int f dx =0
+\end{equation}
+#+end_src
+
+To 
+#+begin_src 
+\begin{equation}[eq:test:1]
+  %\label{eq:test:1}
+  \int f dx =0
+\end{equation}
+#+end_src
+
+
+
+*** Latex style file
+=rdfref-equation.sty=
+
+This allow to use
+#+begin_src 
+\begin{equation}[eq:test:1]
+  %\label{eq:test:1}
+  \int f dx =0
+\end{equation}
+#+end_src
+
+** The logic of references:  sources and targets
+
+In Latex files you can refer to equations (using the =\ref= =\eqref=, =\autoref= or any other =LaTeX= reference command)
+like 
+
+#+begin_src 
+\begin{equation}
+  \label{eq:test:1}
+  \int f dx =0
+\end{equation}
+and
+\begin{equation}
+  \label{eq:test:2}
+   f =0
+\end{equation}
+which is a consequence of \autoref{eq:test:1}
+#+end_src
+   
+This simple example is displayed, (when compiling with =pdflatex= or =xelatex=, or =luatex= in any modern) pdf viewer and it is possible to jump to the target and back to the source.
+The target is defined by the =label=, the source by the =ref=.
+
+However for =rdfref= that generates dependency graph, using arrows, this is a bit of a problem.
+The example above translated into =rdfref= syntax looks like.
+#+begin_src
+\begin{equation}[eq:test:1]
+  %\label{eq:test:1}
+  \int f dx =0
+\end{equation}
+and
+\begin{equation}[eq:test:2]
+  %\label{eq:test:2}
+   f =0
+\end{equation}
+which is a consequence of \autoref{eq:test:1}
+#+end_src
+
+But will result in the following graph.
+#+CAPTION: The incorrect graph (arrow pointing in the wrong direction)  
+#+NAME:   Graph1
+[[./images/rdfref-incorrect.png]]
+
+
+So the correct syntax would require to place the reference directly blow the equation you consider as a source
+ 
+#+begin_src
+\begin{equation}[eq:test:1]
+  %\label{eq:test:1}
+  \int f dx =0
+\end{equation}
+which implies \autoref{eq:test:2}
+\begin{equation}[eq:test:2]
+  %\label{eq:test:2}
+   f =0
+\end{equation}
+#+end_src
+
+   
+#+CAPTION: The correct graph 
+#+NAME:   Graph2
+[[./images/rdfref-correct.png]]
+
